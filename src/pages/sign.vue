@@ -10,7 +10,7 @@
  
         <form class="register-wrap" v-show="showRegister">
             <p v-show="hint">{{ hint}}</p>
-            <input type="text" placeholder="请输入用户名" v-model="newUsername">
+            <input style="margin-top: 60px" type="text" placeholder="请输入用户名" v-model="newUsername">
             <input type="password" placeholder="请输入密码" v-model="newPassword">
             <button v-on:click="register">注册</button>
             <span v-on:click="ToLogin">已有账号？马上登录</span>
