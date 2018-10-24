@@ -5,24 +5,21 @@
         <div class="modal-container">
 
           <div class="modal-header">
-            <slot name="header">
-              default header
-            </slot>
+            <VSelect
+              @select="select"/>
           </div>
 
           <div class="modal-body">
-            <slot name="body">
-              default body
-            </slot>
+            <input v-model="purpose" placeholder="请大致描述预约目的">
           </div>
 
           <div class="modal-footer">
-            <slot name="footer">
-              default footer
-              <button class="modal-default-button" @click="$emit('close')">
-                OK
+              <button calss="modal-default-button" @click='click_reserve'>
+                预约
               </button>
-            </slot>
+              <button class="modal-default-button" @click='click_close'>
+                取消
+              </button>
           </div>
         </div>
       </div>
@@ -31,8 +28,37 @@
 </template>
 
 <script>
+import VSelect from '@/components/VSelect'
+
 export default {
-    name: 'TheModal'
+    name: 'TheReserve',
+    components: {
+      'VSelect' : VSelect
+    },
+    data(){
+        return{
+          selected:'',
+          purpose:''
+        };
+    },
+    methods:{
+      click_close(){
+        this.selected = '';
+        this.$emit('close');
+      },
+      click_reserve(){
+        this.$emit('reserve',{
+          selected: this.selected,
+          purpose: this.purpose
+        });
+        this.selected = '';
+        
+        
+      },
+      select(payload){
+        this.selected = payload.selected;
+      }
+    }
 }
 </script>
 
@@ -92,3 +118,4 @@ export default {
   transform: scale(1.1);
 }
 </style>
+

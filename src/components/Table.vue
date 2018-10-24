@@ -18,66 +18,88 @@
             <tbody class="tbody-wrap">
                 <tr>
                     <td id="col-1">1</td>
-                    <TableItem
-                        v-for="(item, index) in statusList" :key="index"
-                        :status='item.status'
-                        :id='index'
-                        @click_item="click_item"
-                    />
+                    
                 </tr>
             </tbody>             
         </table>
         <TheModal
             v-show="showTheModal.ifshow"
-            @close="close"
-        />
+            @close="close">
+            <template slot="header">
+                <p>{{showTheModal.content}}</p>
+            </template>
+        </TheModal>
+        <TheReserve 
+            v-show="showReserve.ifshow"
+            @reserve="reserve"
+            @close="close"/>
     </div>
 </template>
 
 <script>
 import TableItem from '@/components/TableItem';
-import TheModal from '@/components/TheModal'
+import TheModal from '@/components/TheModal';
+import TheReserve from '@/components/TheReserve';
+import { getStatusList } from '@/service/getStatusList';
+import { mapState } from 'vuex';
+
 export default {
     components: {
         'TableItem' : TableItem,
-        'TheModal' : TheModal
+        'TheModal' : TheModal,
+        'TheReserve' : TheReserve
     },
-    computed:{
-    },
+    created:
+        async function () {
+            let week = 3;
+            let uid = this.$store.state.uid;
+ 
+            try{
+                var statusList =  await getStatusList(uid, week);
+            }catch(err){
+                console.log(err);
+            }
+            this.statusList = statusList;
+        }
+    ,
     props:['month'],
     data(){
         return{
-            statusList:[
-                { status: '',
-                  loc: '1',}, 
-                { status: 'reserved',
-                  loc: '2',}, 
-                { status: '',
-                  loc: '3',}, 
-                { status: 'reserved',
-                  loc: '4',}, 
-                { status: '',
-                  loc: '5',}, 
-                { status: 'reserved',
-                  loc: '6',}, 
-                { status: '',
-                  loc: '7',},          
-            ],
+            statusList:[],
             showTheModal:{
-                loc:0,
+                id:null,
                 ifshow:false,
                 content:''
+            },
+            content:[
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+                'f',
+                'g'
+            ],
+            showReserve:{
+                id:null,
+                ifshow:false
             }
         };
     },
     methods:{
         click_item(payload){
             if(payload.status == ''){
-                this.showTheModal.ifshow=true;
+                this.showReserve.ifshow=true;
             }
         },
         close(){
             this.showTheModal.ifshow=false;
+            this.showReserve.ifshow=false;
+        },
+        reserve(payload){
+            this.showReserve.ifshow = false;
+            console.log(payload.selected);
+            console.log(payload.purpose);
         }
     }
 }

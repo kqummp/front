@@ -9,14 +9,16 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'Sign',
+      path: '/sign',
       component:Sign
     },
     {
-      path: '/main',
-      name: 'Main',
-      component:Main
+      path: '/',
+      component:Sign
+    },
+    {
+      path: '/std/main/:uid',
+      component: Main
     }
   ]
 })

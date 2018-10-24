@@ -2,18 +2,20 @@
     <main>
         <form class="login-wrap" v-show="showLogin">
             <p v-show="hint">{{ hint }}</p>
-            <input style="margin-top: 60px" type="text" placeholder="请输入用户名" v-model="username">
-            <input type="password" placeholder="请输入密码" v-model="password">
-            <button v-on:click="login">登录</button>
-            <span v-on:click="ToRegister">没有账号？马上注册</span>
+            <input style="margin-top: 60px" type="text" placeholder="请输入用户名" v-model="uid">
+            <input type="password" placeholder="请输入密码" v-model="passwd">
+            <button @click="login">登录</button>
+            <span @click="ToResetPasswd">忘记密码？马上修改</span>
         </form>
  
-        <form class="register-wrap" v-show="showRegister">
+        <form class="register-wrap" v-show="showResetPasswd">
             <p v-show="hint">{{ hint}}</p>
-            <input style="margin-top: 60px" type="text" placeholder="请输入用户名" v-model="newUsername">
-            <input type="password" placeholder="请输入密码" v-model="newPassword">
-            <button v-on:click="register">注册</button>
-            <span v-on:click="ToLogin">已有账号？马上登录</span>
+            <input style="margin-top: 60px" type="text" placeholder="请输入用户名" v-model="uid">
+            <input type="password" placeholder="请输入旧密码" v-model="old_passwd">
+            <input type="password" placeholder="请输入新密码" v-model="new_passwd">
+            <input type="password" placeholder="请确认新密码" v-model="new_passwd_r">
+            <button @click="passwdReset">修改</button>
+            <span @click="ToLogin">已有账号？直接登陆</span>
         </form>
     </main>
 </template>
@@ -30,33 +32,55 @@
 </style>
  
 <script>
+import {login, passwdReset} from '@/service/index.js';
+import { mapActions } from 'vuex';
+
     export default{
         data(){
             return{
                 showLogin: true,
-                showRegister: false,
+                showResetPasswd: false,
                 showHint: false,
                 hint: '',
-                username: '',
-                password: '',
-                newUsername: '',
-                newPassword: ''
+                uid: '',
+                passwd: '',
+                old_passwd: '',
+                new_passwd: '',
+                new_passwd_r:''
             }
         },
         methods: {
-            ToRegister(){
+            ...mapActions([
+                'logIn'
+            ]),
+            ToResetPasswd(){
                 this.showLogin = false;
-                this.showRegister = true;
+                this.showResetPasswd = true;
             },
             ToLogin(){
                 this.showLogin = true;
-                this.showRegister = false;
+                this.showResetPasswd = false;
             },
-            register(){
+            async passwdReset(){
+                let uid = this.uid;
+                let old_passwd = this.old_passwd;
+                let new_passwd = this.new_passwd;
+                let new_passwd_r = this.new_passwd_r;
 
+                let result = await passwdReset(uid,old_passwd,new_passwd,new_passwd_r);
+                return result;
             },
-            login(){
+            async login(){
+                 let uid = this.uid;
+                 let passwd = this.passwd;
+                 let result = await login(uid, passwd);
+                 
+                 if(result.message == 'OK'){
 
+                     this.logIn({ uid: this.uid });
+                    this.$router.push('/std/main/' + this.uid);
+                    
+                 };
             }
         }
     }
